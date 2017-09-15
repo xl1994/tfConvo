@@ -1,4 +1,9 @@
 #  -*- Coding: UTF-8 -*-
+'''
+THIS IS THE PYTHON MODULE THAT IMPLEMENT BASIC FUNCTION OF CONVERTING PICTURE FILE TO TENDORFLOW TFRECORDS FILE AND
+READING AND DECODING TFRECORDS FILE
+THE PROGRAM WAS INITIALLY RUN ON A NONGRAPHIC CENTOS MACHINE
+'''
 import os 
 import tensorflow as tf 
 from PIL import Image 
@@ -8,8 +13,6 @@ import numpy as np
 # turn off warning
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
-global num_class
-
 number =['0','1','2','3','4','5','6','7','8','9']
 alphabet_lower = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 alphabet_upper = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -18,9 +21,14 @@ num_train_examples = 400*62
 num_valid_examples = 80*62
 img_width = 40
 img_height = 60
+img_pixels = img_width * img_height
 num_class = 62
 
+# In order to use gentfr() function, your picture should be stored in the directory under the current working directory
 def gentfr(cwd, classes, filename):
+    # cwd -> directory that stores your pictures
+    # classes -> all classes needed in the classification program
+    # filename -> file name of tfrecords file
     writer= tf.python_io.TFRecordWriter(filename)
     for index,name in enumerate(classes):
          class_path=cwd+'/'+name+'/'
@@ -35,10 +43,10 @@ def gentfr(cwd, classes, filename):
     return filename
 
 def read_and_decode(filename, b_size):
-    img_height = 60
-    img_width = 40
-    img_pixels = img_width * img_height
-    class_num = 62
+    global img_height
+    global img_width
+    global img_pixels
+    global class_num
     # BATCH_SIZE = 100
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
@@ -66,6 +74,7 @@ def test_records(filename):
               print val.shape, label.shape
 
 def fetchData(filename, b_size, mode=1):
+    # generate one-hot lobels
     # mode = 1, parse label as column vectors
     # mode = 0, parse lable as row vectors
     image_batch, label_batch = read_and_decode(filename, b_size)
