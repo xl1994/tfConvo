@@ -19,7 +19,7 @@ def add_conv_layer(filter_size, filter_num, channel, stride, input_tensor):
    # filter_num is the number of kernel
    w = weight_variable([filter_size, filter_size, channel, filter_num])
    b = bias_variable([filter_num])
-   conv = tf.nn.conv2d(input=input_tensor,filter=w, strides=stride, padding='SAME') + b
+   conv = tf.nn.conv2d(input=input_tensor, filter=w, strides=stride, padding='SAME') + b
    return tf.nn.relu(conv)
 
 def add_fcon_layer(input_flat, input_len, num_fcon):
@@ -44,7 +44,7 @@ if '__main__' == __name__:
    # b_conv1 = bias_variable([filter_num1])
    # conv1 = tf.nn.conv2d(input=x_tensor,filter=w_conv1,strides=[1,2,2,1],padding='SAME')+b_conv1
    # h_conv1 = tf.nn.relu(conv1)
-   # h_conv1  ---   14*14*16 ?
+   # h_conv1  ---   14*14*16 ? h_conv1 has a channel of 16
    h_conv1 = add_conv_layer(filter_size, filter_num1, 1, [1,2,2,1], x_tensor)
    # conv layer 2
    filter_num2 = 16
@@ -53,7 +53,9 @@ if '__main__' == __name__:
    # conv2 = tf.nn.conv2d(input=h_conv1,filter=w_conv2,strides=[1,2,2,1],padding='SAME')+b_conv2
    # h_conv2 = tf.nn.relu(conv2)
    # h_conv2   ---   7*7*16?
-   h_conv2 = add_conv_layer(filter_size, filter_num2, 1, [1,2,2,1], h_conv1)
+   # input h_conv1 has channel 16, kernel must has the same channel as input
+   # therefor the 3rd parameter is filter_num1 rather than 1
+   h_conv2 = add_conv_layer(filter_size, filter_num2, filter_num1, [1,2,2,1], h_conv1)
    
    # add full connection hiden layer, how to modify this
    h_conv2_flat = tf.reshape(h_conv2,[-1,7*7*filter_num2])
@@ -92,5 +94,4 @@ if '__main__' == __name__:
            batch_xs, batch_ys = mnist.train.next_batch(batch_size)
            sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, keep_prob:0.5})
            h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
-       # print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
-   print h
+       print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
