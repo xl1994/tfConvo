@@ -29,16 +29,16 @@ def gentfr(cwd, classes, filename):
     # cwd -> directory that stores your pictures
     # classes -> all classes needed in the classification program
     # filename -> file name of tfrecords file
-    # rewrite labels on 2017/09/22
-    # label should be column vector
-    label = np.zeros([62,1])
     writer= tf.python_io.TFRecordWriter(filename)
     for index,name in enumerate(classes):
          class_path=cwd+'/'+name+'/'
+         # rewrite labels on 2017/09/22
+         # label should be column vector
+         label = np.zeros([62,1])
+         label[index] = 1
          for img_name in os.listdir(class_path): 
               img_path=class_path+img_name
               img=Image.open(img_path)
-              label[index] = 1
               # img= img.resize((128,128))
               img_raw=img.tobytes()
               # modify the following line change int64_list=tf.train.Int64List(value=[index])) to int64_list=tf.train.Int64List(value=[label]))
