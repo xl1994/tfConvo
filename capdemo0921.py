@@ -78,17 +78,19 @@ if '__main__' == __name__:
    accuracy = tf.reduce_mean(tf.cast(correct_prediction,'float'))
    
    # start to train with mini-batch
-   sess = tf.Session()
    sess.run(tf.initialize_all_variables())
    batch_size = 100
    n_epochs = 5
    
    # start trainning
    # how to train
-   for epoch_i in range(n_epochs):
-       for batch_i in range(tfr.num_examples/batch_size):
-           batch_xs, batch_ys = tfr.fetch_data('train.tfrecords',batch_size)
-           sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, keep_prob:0.5})
-           print 'Training......'
-           # h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
+   imgs, labels = tfr.read_and_decode('train.tfrecords',batch_size)
+   with tf.Session() as sess:
+       sess.run(tf.global_variables_initializer())
+       threads = tf.train.start_queue_runners(sess=sess)
+       batch_xs, batch_ys = sess.run([imgs, labels])
+       batch_ys = tf.one_hot(batch_ys, tfr.num_class, 1, 0)
+       sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, keep_prob:0.5})
+       print 'Training finished!'
+       # h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
            # print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
