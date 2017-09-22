@@ -89,8 +89,6 @@ if '__main__' == __name__:
        sess.run(tf.global_variables_initializer())
        threads = tf.train.start_queue_runners(sess=sess)
        batch_xs, batch_ys = sess.run([imgs, labels])
-       batch_ys = tf.one_hot(batch_ys, tfr.num_class, 1, 0)
+       batch_ys = tf.one_hot(batch_ys, tfr.num_class, 1, 0).eval()
        sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, keep_prob:0.5})
        print 'Training finished!'
-       # h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
-           # print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
