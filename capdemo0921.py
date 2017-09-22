@@ -86,8 +86,9 @@ if '__main__' == __name__:
    # start trainning
    # how to train
    for epoch_i in range(n_epochs):
-       for batch_i in range(mnist.train.num_examples/batch_size):
-           batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+       for batch_i in range(tfr.num_examples/batch_size):
+           batch_xs, batch_ys = tfr.fetch_data('train.tfrecords',batch_size)
            sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, keep_prob:0.5})
-           h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
-           print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
+           print 'Training......'
+           # h.append(sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0}))
+           # print sess.run(accuracy, feed_dict={x: mnist.validation.images,y:mnist.validation.labels,keep_prob:1.0})
